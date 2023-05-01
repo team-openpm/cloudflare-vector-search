@@ -7,5 +7,8 @@
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20230404.0",
 		"wrangler": "^2.0.0"
+	},
+	"dependencies": {
+		"@neondatabase/serverless": "^0.4.3"
 	}
 }
