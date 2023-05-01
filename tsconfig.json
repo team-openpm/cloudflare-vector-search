@@ -5,6 +5,9 @@
     "lib": ["ES2021"],
     "moduleResolution": "node",
     "strict": true,
-    "types": ["@cloudflare/workers-types"]
+    "types": ["@cloudflare/workers-types"],
+    "paths": {
+      "@/*": ["./*"]
+    }
   }
 }
