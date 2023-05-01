@@ -1,11 +1,7 @@
 import { getDb } from '@/data/db'
-import { searchRecords } from '@/data/records/getter'
 import { indexRecord } from '@/data/records/setter'
-import { Records } from '@/data/schema'
 import { Env } from '@/helpers/env'
-import { getSearchParams } from '@/helpers/request'
 import { json } from '@/helpers/response'
-import { Insertable, Selectable } from 'kysely'
 import { z } from 'zod'
 
 const schema = z.object({
