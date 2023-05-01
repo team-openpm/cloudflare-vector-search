@@ -1,7 +1,7 @@
 import { Kysely, PostgresDialect } from 'kysely'
 import { Pool } from '@neondatabase/serverless'
 
-import { DB } from './types'
+import { DB } from './schema'
 import { assertString } from '../lib/assert'
 
 export function getDb(env: Env) {
