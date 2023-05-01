@@ -32,8 +32,8 @@ CREATE TABLE records (
 -- Indexes
 CREATE INDEX records_text_idx ON records USING GIN (text gin_trgm_ops);
 
--- Unique index for namespace
-CREATE UNIQUE INDEX records_namespace_idx ON records (namespace);
+-- index for namespace
+CREATE INDEX records_namespace_idx ON records (namespace);
 
 -- Index for embedding
 CREATE INDEX records_embedding_idx ON records USING ivfflat (embedding vector_l2_ops) WITH (lists = 100)

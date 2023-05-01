@@ -3,6 +3,7 @@ import { Pool } from '@neondatabase/serverless'
 
 import { DB } from './schema'
 import { assertString } from '../lib/assert'
+import { Env } from '@/helpers/env'
 
 export function getDb(env: Env) {
   assertString(env.DATABASE_URL)
