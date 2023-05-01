@@ -1,6 +1,9 @@
 {
   "private": true,
   "version": "0.0.0",
+  "engines": {
+    "node": "= 18"
+  },
   "scripts": {
     "dev": "wrangler pages dev public",
     "update-kysely-types": "env-cmd -f .env.local kysely-codegen --out-file ./data/schema.ts --exclude-pattern spatial_ref_sys --dialect postgres"
