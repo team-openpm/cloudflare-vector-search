@@ -23,17 +23,11 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
 
   const recordData = schemaParse.data
 
-  // id: Generated<string>
-  // namespace: string
-  // text: string
-  // embedding: string
-  // metadata: Generated<Json>
-
-  const record: Insertable<Records> = {
+  const record = {
     text: recordData.text,
     namespace: recordData.namespace,
     metadata: {},
-    embedding: [] as string[],
+    embedding: [],
   }
 
   const response = await indexRecord({ record, db })

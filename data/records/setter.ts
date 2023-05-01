@@ -1,11 +1,10 @@
-import { Insertable, Kysely, RawBuilder, sql } from 'kysely'
-import { jsonArrayFrom, jsonBuildObject } from 'kysely/helpers/postgres'
-import { DB, Records } from '../schema'
+import { Kysely, RawBuilder, sql } from 'kysely'
+import { DB } from '../schema'
 
 interface DbRecord {
   text: string
   namespace: string
-  metadata: Record<string, unknown>
+  metadata: Record<string, string>
   embedding: string[]
 }
 
@@ -19,7 +18,7 @@ export async function indexRecord({
   return await db
     .insertInto('records')
     .values({
-      text: '123',
+      text: record.text,
       namespace: record.namespace,
       metadata: json(record.metadata),
       embedding: json(record.embedding),
@@ -28,6 +27,6 @@ export async function indexRecord({
     .executeTakeFirstOrThrow()
 }
 
-function json<T>(object: T): RawBuilder<T> {
-  return sql`cast (${JSON.stringify(object)} as jsonb)`
+function json<T>(value: T): RawBuilder<string> {
+  return sql`CAST(${JSON.stringify(value)} AS JSONB)`
 }
