@@ -1,0 +1,199 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Cloudflare Vector Search API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://example.com/api"
+    }
+  ],
+  "paths": {
+    "/submit": {
+      "post": {
+        "summary": "Submit a document",
+        "operationId": "submitDocument",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitDocument"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Document submitted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentId"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bulk-submit": {
+      "post": {
+        "summary": "Submit a large document",
+        "operationId": "submitLargeDocument",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitDocument"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Large document submitted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentId"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "summary": "Search documents",
+        "operationId": "searchDocuments",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "namespace",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Document"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SubmitDocument": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "The text of the document"
+          },
+          "namespace": {
+            "type": "string",
+            "description": "An optional namespace for the document"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "An optional key/value metadata object for the document"
+          }
+        },
+        "required": ["text"]
+      },
+      "Document": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the document"
+          },
+          "namespace": {
+            "type": "string",
+            "description": "The namespace of the document"
+          },
+          "text": {
+            "type": "string",
+            "description": "The text of the document"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "The key/value metadata object for the document"
+          },
+          "indexed_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp when the document was indexed"
+          },
+          "similarity": {
+            "type": "number",
+            "format": "double",
+            "description": "The similarity score between the document and the search query"
+          }
+        },
+        "required": [
+          "id",
+          "namespace",
+          "text",
+          "metadata",
+          "indexed_at",
+          "similarity"
+        ]
+      },
+      "DocumentId": {
+        "type": "object",
+        "description": "Plain document identifier",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the document"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

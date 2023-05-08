@@ -30,6 +30,21 @@ curl -X POST -H "Content-Type: application/json" -d '{"text": "big document"}' "
 curl "http://127.0.0.1:8788/api/search?query=cloudflare"
 ```
 
+Which returns:
+
+```json
+[
+  {
+    "id": "fad58cf0-78dc-4170-9ae3-38f5c62868e3",
+    "namespace": "default",
+    "text": "cloudflare",
+    "metadata": {},
+    "indexed_at": "2023-05-08T08:02:29.058Z",
+    "similarity": 0.9999999999999998
+  }
+]
+```
+
 ## Additional options
 
 You can pass a `namespace` parameter to both the submit and search endpoints to namespace your queries.
@@ -47,6 +62,15 @@ curl "http://127.0.0.1:8788/api/search?query=cloudflare&namespace=my-namespace"
 A namespace could be a user ID, a document ID, or anything else you want to use to group your queries.
 
 You can also pass in a key/value `metadata` object to the submit endpoint to store additional data about your query.
+
+## Development
+
+Setup the env vars as described below and then run:
+
+```bash
+yarn
+yarn dev
+```
 
 ## Deployment
 
