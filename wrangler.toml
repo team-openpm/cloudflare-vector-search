@@ -1,0 +1,4 @@
+name = "cloudflare-vector-search"
+
+[vars]
+ENVIRONMENT = "production"

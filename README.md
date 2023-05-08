@@ -1,19 +1,15 @@
-# Template: pages-functions-cors
+# cloudflare vector search
 
-[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/templates/tree/main/pages-functions-cors)
+## Usage
 
-A template for Pages Functions appending CORS headers.
+### Submitting
 
-## Setup
-
-To create a `my-project` directory using this template, run:
-
-```sh
-$ npm init cloudflare my-project pages-functions-cors
-# or
-$ yarn create cloudflare my-project pages-functions-cors
-# or
-$ pnpm create cloudflare my-project pages-functions-cors
+```bash
+curl -X POST -H "Content-Type: application/json" -d '{"text": "cloudflare"}' "http://127.0.0.1:8788/api/submit"
 ```
 
-> **Note:** Each command invokes [`create-cloudflare`](https://www.npmjs.com/package/create-cloudflare) for project creation.
+### Searching
+
+```bash
+curl "http://127.0.0.1:8788/api/search?query=cloudflare"
+```

@@ -1,5 +1,8 @@
 -- Postgres Schema for vector search database
 
+-- Drop database if exists
+-- DROP TABLE IF EXISTS records;
+
 -- Enable uuid
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -36,4 +39,4 @@ CREATE INDEX records_text_idx ON records USING GIN (text gin_trgm_ops);
 CREATE INDEX records_namespace_idx ON records (namespace);
 
 -- Index for embedding
-CREATE INDEX records_embedding_idx ON records USING ivfflat (embedding vector_l2_ops) WITH (lists = 100)
+CREATE INDEX records_embedding_idx ON records USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100)

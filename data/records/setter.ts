@@ -1,11 +1,12 @@
-import { Kysely, RawBuilder, sql } from 'kysely'
+import { Kysely } from 'kysely'
 import { DB } from '../schema'
+import { json, vector } from '../../lib/sql'
 
 interface DbRecord {
   text: string
   namespace: string
   metadata: Record<string, string>
-  embedding: string[]
+  embedding: number[]
 }
 
 export async function indexRecord({
@@ -21,12 +22,8 @@ export async function indexRecord({
       text: record.text,
       namespace: record.namespace,
       metadata: json(record.metadata),
-      embedding: json(record.embedding),
+      embedding: vector(record.embedding),
     })
     .returning('id')
     .executeTakeFirstOrThrow()
-}
-
-function json<T>(value: T): RawBuilder<string> {
-  return sql`CAST(${JSON.stringify(value)} AS JSONB)`
 }

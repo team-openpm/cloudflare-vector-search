@@ -1,6 +1,8 @@
+type Embedding = number[]
+
 interface EmbeddingResponse {
   data: {
-    embedding: number[]
+    embedding: Embedding
   }[]
 }
 
@@ -14,7 +16,7 @@ export const fetchEmbeddings = async ({
   input: string
   model?: string
   apiKey: string
-}): Promise<number[]> => {
+}): Promise<Embedding> => {
   if (!apiKey) {
     throw new Error('apiKey required')
   }
@@ -34,8 +36,7 @@ export const fetchEmbeddings = async ({
     )
   }
 
-  const json = await response.json()
-  const result = json as EmbeddingResponse
+  const json = (await response.json()) as EmbeddingResponse
 
-  return result.data.map((datum) => datum.embedding)[0]
+  return json.data.map((datum) => datum.embedding)[0]
 }
