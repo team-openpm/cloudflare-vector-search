@@ -20,8 +20,8 @@ export const onRequestGet: PagesFunction<Env> = async ({ env, request }) => {
   return json(
     records.map((record) => ({
       id: record.id,
-      text: record.text,
       namespace: record.namespace,
+      text: record.text,
       metadata: record.metadata,
       indexed_at: record.indexed_at,
       similarity: record.similarity,
