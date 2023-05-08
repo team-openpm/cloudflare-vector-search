@@ -2,9 +2,9 @@ import { getDb } from '@/data/db'
 import { indexRecord } from '@/data/records/setter'
 import { Env } from '@/helpers/env'
 import { json } from '@/helpers/response'
-import { splitText } from '@/helpers/tokenize'
 import { createEmbedding } from '@/lib/openai/embeddings'
 import { z } from 'zod'
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter'
 
 const schema = z.object({
   text: z.string(),
@@ -22,18 +22,23 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
 
   const recordData = schemaParse.data
 
-  const texts = splitText(recordData.text)
+  const splitter = new RecursiveCharacterTextSplitter({
+    chunkSize: 1000,
+    chunkOverlap: 0,
+  })
+
+  const documents = await splitter.createDocuments([recordData.text])
 
   const ids: string[] = []
 
-  for (const text of texts) {
+  for (const document of documents) {
     const embedding = await createEmbedding({
       input: recordData.text,
       apiKey: env.OPENAI_API_KEY,
     })
 
     const record = {
-      text: text,
+      text: document.pageContent,
       namespace: recordData.namespace,
       metadata: recordData.metadata,
       embedding,
