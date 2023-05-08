@@ -26,12 +26,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
     chunkOverlap: 0,
   })
 
-  const documents = await splitter.createDocuments([params.text])
+  const splitDocuments = await splitter.createDocuments([params.text])
 
-  const records = await Promise.all(
-    documents.map((document) =>
+  const documents = await Promise.all(
+    splitDocuments.map((doc) =>
       indexText({
-        text: document.pageContent,
+        text: doc.pageContent,
         metadata: params.metadata,
         namespace: params.namespace,
         env,
@@ -39,7 +39,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
     )
   )
 
-  return json({ records })
+  return json({ documents })
 }
 
 async function indexText({

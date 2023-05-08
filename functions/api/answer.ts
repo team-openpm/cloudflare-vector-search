@@ -30,7 +30,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ env, request }) => {
   })
 
   const contextText = limitedJoin(
-    documents.map((record) => record.text),
+    documents.map((doc) => doc.text),
     1500
   )
 

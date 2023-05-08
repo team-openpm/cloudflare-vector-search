@@ -20,16 +20,20 @@ export const onRequestGet: PagesFunction<Env> = async ({ env, request }) => {
     apiKey: env.OPENAI_API_KEY,
   })
 
-  const records = await searchDocumentsByEmbedding({ namespace, db, embedding })
+  const documents = await searchDocumentsByEmbedding({
+    namespace,
+    db,
+    embedding,
+  })
 
   return json(
-    records.map((record) => ({
-      id: record.id,
-      namespace: record.namespace,
-      text: record.text,
-      metadata: record.metadata,
-      indexed_at: record.indexed_at,
-      similarity: record.similarity,
+    documents.map((doc) => ({
+      id: doc.id,
+      namespace: doc.namespace,
+      text: doc.text,
+      metadata: doc.metadata,
+      indexed_at: doc.indexed_at,
+      similarity: doc.similarity,
     })),
     {
       headers: {
