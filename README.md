@@ -1,5 +1,15 @@
 # cloudflare vector search
 
+This project is a Cloudflare Page that allows you to perform a semantic search over a set of documents.
+
+Essentially you can search for meaning, not just keywords.
+
+The nice thing about using Cloudflare is that it's incredibly fast and cheap. You can deploy this to a free Cloudflare Page and it will scale to millions of documents.
+
+See below for examples on how to submit and search documents.
+
+For large documents, we support a bulk submit endpoint that will automatically split your document into paragraphs and index each paragraph separately.
+
 ## Usage
 
 ### Submitting
