@@ -7,7 +7,7 @@ import { z } from 'zod'
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter'
 
 const schema = z.object({
-  text: z.string(),
+  text: z.string().min(1),
   namespace: z.string().default('default'),
   metadata: z.record(z.string()).default({}),
 })

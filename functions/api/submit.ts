@@ -6,7 +6,7 @@ import { createEmbedding } from '@/lib/openai/embeddings'
 import { z } from 'zod'
 
 const schema = z.object({
-  text: z.string(),
+  text: z.string().min(1),
   namespace: z.string().default('default'),
   metadata: z.record(z.string()).default({}),
 })
