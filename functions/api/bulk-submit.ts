@@ -13,7 +13,6 @@ const schema = z.object({
 })
 
 export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
-  const db = getDb(env)
   const schemaParse = await schema.safeParseAsync(await request.json())
 
   if (!schemaParse.success) {
