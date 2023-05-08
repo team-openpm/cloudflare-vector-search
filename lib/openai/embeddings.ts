@@ -8,7 +8,7 @@ interface EmbeddingResponse {
 
 const openaiEndpoint = 'https://api.openai.com/v1'
 
-export const fetchEmbeddings = async ({
+export const createEmbedding = async ({
   input,
   model = 'text-embedding-ada-002',
   apiKey,
@@ -21,13 +21,16 @@ export const fetchEmbeddings = async ({
     throw new Error('apiKey required')
   }
 
+  // OpenAI recommends replacing newlines with spaces for best results
+  const strippedInput = input.replace(/\n/g, ' ')
+
   const response = await fetch(`${openaiEndpoint}/embeddings`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
     },
-    body: JSON.stringify({ input, model }),
+    body: JSON.stringify({ input: strippedInput, model }),
   })
 
   if (!response.ok) {

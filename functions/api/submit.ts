@@ -2,7 +2,7 @@ import { getDb } from '@/data/db'
 import { indexRecord } from '@/data/records/setter'
 import { Env } from '@/helpers/env'
 import { json } from '@/helpers/response'
-import { fetchEmbeddings } from '@/lib/openai/embeddings'
+import { createEmbedding } from '@/lib/openai/embeddings'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -21,7 +21,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
 
   const recordData = schemaParse.data
 
-  const embedding = await fetchEmbeddings({
+  const embedding = await createEmbedding({
     input: recordData.text,
     apiKey: env.OPENAI_API_KEY,
   })

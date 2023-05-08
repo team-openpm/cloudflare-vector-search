@@ -23,11 +23,15 @@ export async function searchRecordsByText({
 export async function searchRecordsByEmbedding({
   embedding,
   namespace,
+  threshold = 0.8,
+  limit = 10,
   db,
 }: {
   embedding: number[]
   namespace: string
   db: Kysely<DB>
+  limit?: number
+  threshold?: number
 }) {
   return await db
     .selectFrom('records')
@@ -41,12 +45,13 @@ export async function searchRecordsByEmbedding({
       cmprEmbedding(embedding).as('similarity'),
     ])
     .where('namespace', '=', namespace)
-    .where(cmprEmbedding(embedding), '>', 0.8)
+    .where(cmprEmbedding(embedding), '>', threshold)
     .orderBy('similarity', 'desc')
-    .limit(10)
+    .limit(limit)
     .execute()
 }
 
 function cmprEmbedding(embedding: number[]) {
+  // OpenAI recommend cosine similarity
   return sql`1 - (${vector(embedding)} <=> embedding)`
 }

@@ -3,14 +3,14 @@ import { searchRecordsByEmbedding } from '@/data/records/getter'
 import { Env } from '@/helpers/env'
 import { getSearchParams } from '@/helpers/request'
 import { json } from '@/helpers/response'
-import { fetchEmbeddings } from '@/lib/openai/embeddings'
+import { createEmbedding } from '@/lib/openai/embeddings'
 
 export const onRequestGet: PagesFunction<Env> = async ({ env, request }) => {
   const db = getDb(env)
   const params = getSearchParams(request)
   const query = params.get('query') || ''
   const namespace = params.get('namespace') || 'default'
-  const embedding = await fetchEmbeddings({
+  const embedding = await createEmbedding({
     input: query,
     apiKey: env.OPENAI_API_KEY,
   })
