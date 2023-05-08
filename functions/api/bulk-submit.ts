@@ -3,8 +3,8 @@ import { indexDocument } from '@/data/documents/setter'
 import { Env } from '@/helpers/env'
 import { json } from '@/helpers/response'
 import { createEmbedding } from '@/lib/openai/embeddings'
+import { RecursiveCharacterTextSplitter } from '@/lib/text-splitter'
 import { z } from 'zod'
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter'
 
 const schema = z.object({
   text: z.string().min(1),

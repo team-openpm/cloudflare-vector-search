@@ -18,11 +18,11 @@
     "wrangler": "^2.19.0"
   },
   "dependencies": {
+    "@dqbd/tiktoken": "^1.0.7",
     "@neondatabase/serverless": "^0.4.3",
     "common-tags": "^1.8.2",
     "gpt3-tokenizer": "^1.1.5",
     "kysely": "^0.24.2",
-    "langchain": "^0.0.71",
     "zod": "^3.21.4"
   }
 }
