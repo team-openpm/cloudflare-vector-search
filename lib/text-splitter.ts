@@ -1,3 +1,6 @@
+// Taken from Langchain.js
+// License here: https://github.com/hwchase17/langchainjs/blob/main/LICENSE
+
 export interface DocumentInput<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Metadata extends Record<string, any> = Record<string, any>
