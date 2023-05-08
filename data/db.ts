@@ -16,7 +16,6 @@ export function getDb(env: Env) {
     dialect: new PostgresDialect({
       pool,
     }),
-    log: console.log,
   })
 
   return db
