@@ -10,11 +10,11 @@
     "update-kysely-types": "env-cmd -f .dev.vars kysely-codegen --out-file ./data/schema.ts --exclude-pattern spatial_ref_sys --dialect postgres"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230404.0",
+    "@cloudflare/workers-types": "^4.20230419.0",
     "env-cmd": "^10.1.0",
     "kysely-codegen": "^0.10.0",
     "pg": "^8.10.0",
-    "wrangler": "^2.0.0"
+    "wrangler": "^2.19.0"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.4.3",
