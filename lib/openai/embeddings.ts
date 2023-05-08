@@ -19,5 +19,7 @@ export async function createEmbedding({
     body: { input: strippedInput, model },
   })
 
-  return json.data.map((datum) => datum.embedding)[0]
+  const [firstData] = json.data
+
+  return firstData.embedding
 }
