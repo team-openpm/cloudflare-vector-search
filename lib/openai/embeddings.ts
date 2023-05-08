@@ -1,14 +1,7 @@
-type Embedding = number[]
+import { fetchApi } from './client'
+import { Embedding, EmbeddingResponse } from './types'
 
-interface EmbeddingResponse {
-  data: {
-    embedding: Embedding
-  }[]
-}
-
-const openaiEndpoint = 'https://api.openai.com/v1'
-
-export const createEmbedding = async ({
+export async function createEmbedding({
   input,
   model = 'text-embedding-ada-002',
   apiKey,
@@ -16,30 +9,15 @@ export const createEmbedding = async ({
   input: string
   model?: string
   apiKey: string
-}): Promise<Embedding> => {
-  if (!apiKey) {
-    throw new Error('apiKey required')
-  }
-
+}): Promise<Embedding> {
   // OpenAI recommends replacing newlines with spaces for best results
   const strippedInput = input.replace(/\n/g, ' ')
 
-  const response = await fetch(`${openaiEndpoint}/embeddings`, {
+  const json = await fetchApi<EmbeddingResponse>(`/embeddings`, {
+    apiKey,
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({ input: strippedInput, model }),
+    body: { input: strippedInput, model },
   })
-
-  if (!response.ok) {
-    throw new Error(
-      `OpenAI API responded with ${response.status}: ${await response.text()}`
-    )
-  }
-
-  const json = (await response.json()) as EmbeddingResponse
 
   return json.data.map((datum) => datum.embedding)[0]
 }

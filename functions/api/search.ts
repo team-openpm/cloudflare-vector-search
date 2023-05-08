@@ -8,8 +8,13 @@ import { createEmbedding } from '@/lib/openai/embeddings'
 export const onRequestGet: PagesFunction<Env> = async ({ env, request }) => {
   const db = getDb(env)
   const params = getSearchParams(request)
-  const query = params.get('query') || ''
+  const query = params.get('query')
   const namespace = params.get('namespace') || 'default'
+
+  if (!query) {
+    return json({ error: 'Missing "query"' })
+  }
+
   const embedding = await createEmbedding({
     input: query,
     apiKey: env.OPENAI_API_KEY,
