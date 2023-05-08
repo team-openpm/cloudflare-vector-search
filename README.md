@@ -34,14 +34,15 @@ curl "http://127.0.0.1:8788/api/search?query=cloudflare"
 
 You can pass a `namespace` parameter to both the submit and search endpoints to namespace your queries.
 
-````bash
+```bash
 curl -X POST -H "Content-Type: application/json" -d '{"text": "cloudflare", "namespace": "my-namespace"}' "http://127.0.0.1:8788/api/submit"
+```
 
 And then:
 
 ```bash
 curl "http://127.0.0.1:8788/api/search?query=cloudflare&namespace=my-namespace"
-````
+```
 
 A namespace could be a user ID, a document ID, or anything else you want to use to group your queries.
 
