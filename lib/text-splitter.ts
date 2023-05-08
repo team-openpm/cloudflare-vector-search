@@ -1,5 +1,3 @@
-import type * as tiktoken from '@dqbd/tiktoken'
-
 export interface DocumentInput<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Metadata extends Record<string, any> = Record<string, any>
@@ -157,33 +155,6 @@ which is longer than the specified ${this.chunkSize}`
   }
 }
 
-export interface CharacterTextSplitterParams extends TextSplitterParams {
-  separator: string
-}
-
-export class CharacterTextSplitter
-  extends TextSplitter
-  implements CharacterTextSplitterParams
-{
-  separator = '\n\n'
-
-  constructor(fields?: Partial<CharacterTextSplitterParams>) {
-    super(fields)
-    this.separator = fields?.separator ?? this.separator
-  }
-
-  async splitText(text: string): Promise<string[]> {
-    // First we naively split the large input into a bunch of smaller ones.
-    let splits: string[]
-    if (this.separator) {
-      splits = text.split(this.separator)
-    } else {
-      splits = text.split('')
-    }
-    return this.mergeSplits(splits, this.separator)
-  }
-}
-
 export interface RecursiveCharacterTextSplitterParams
   extends TextSplitterParams {
   separators: string[]
@@ -244,118 +215,5 @@ export class RecursiveCharacterTextSplitter
       finalChunks.push(...mergedText)
     }
     return finalChunks
-  }
-}
-
-export interface TokenTextSplitterParams extends TextSplitterParams {
-  encodingName: tiktoken.TiktokenEncoding
-  allowedSpecial: 'all' | Array<string>
-  disallowedSpecial: 'all' | Array<string>
-}
-
-/**
- * Implementation of splitter which looks at tokens.
- */
-export class TokenTextSplitter
-  extends TextSplitter
-  implements TokenTextSplitterParams
-{
-  encodingName: tiktoken.TiktokenEncoding
-
-  allowedSpecial: 'all' | Array<string>
-
-  disallowedSpecial: 'all' | Array<string>
-
-  private tokenizer: tiktoken.Tiktoken | undefined
-
-  private registry: FinalizationRegistry<tiktoken.Tiktoken> | undefined
-
-  constructor(fields?: Partial<TokenTextSplitterParams>) {
-    super(fields)
-
-    this.encodingName = fields?.encodingName ?? 'gpt2'
-    this.allowedSpecial = fields?.allowedSpecial ?? []
-    this.disallowedSpecial = fields?.disallowedSpecial ?? 'all'
-  }
-
-  async splitText(text: string): Promise<string[]> {
-    if (!this.tokenizer) {
-      const tiktoken = await TokenTextSplitter.imports()
-      this.tokenizer = tiktoken.get_encoding(this.encodingName)
-      // We need to register a finalizer to free the tokenizer when the
-      // splitter is garbage collected.
-      this.registry = new FinalizationRegistry((t) => t.free())
-      this.registry.register(this, this.tokenizer)
-    }
-
-    const splits: string[] = []
-
-    const input_ids = this.tokenizer.encode(
-      text,
-      this.allowedSpecial,
-      this.disallowedSpecial
-    )
-
-    let start_idx = 0
-    let cur_idx = Math.min(start_idx + this.chunkSize, input_ids.length)
-    let chunk_ids = input_ids.slice(start_idx, cur_idx)
-
-    const decoder = new TextDecoder()
-
-    while (start_idx < input_ids.length) {
-      splits.push(decoder.decode(this.tokenizer.decode(chunk_ids)))
-
-      start_idx += this.chunkSize - this.chunkOverlap
-      cur_idx = Math.min(start_idx + this.chunkSize, input_ids.length)
-      chunk_ids = input_ids.slice(start_idx, cur_idx)
-    }
-
-    return splits
-  }
-
-  static async imports(): Promise<typeof tiktoken> {
-    try {
-      return await import('@dqbd/tiktoken')
-    } catch (err) {
-      console.error(err)
-      throw new Error(
-        'Please install @dqbd/tiktoken as a dependency with, e.g. `npm install -S @dqbd/tiktoken`'
-      )
-    }
-  }
-}
-
-export type MarkdownTextSplitterParams = TextSplitterParams
-
-export class MarkdownTextSplitter
-  extends RecursiveCharacterTextSplitter
-  implements MarkdownTextSplitterParams
-{
-  separators: string[] = [
-    // First, try to split along Markdown headings (starting with level 2)
-    '\n## ',
-    '\n### ',
-    '\n#### ',
-    '\n##### ',
-    '\n###### ',
-    // Note the alternative syntax for headings (below) is not handled here
-    // Heading level 2
-    // ---------------
-    // End of code block
-    '```\n\n',
-    // Horizontal lines
-    '\n\n***\n\n',
-    '\n\n---\n\n',
-    '\n\n___\n\n',
-    // Note that this splitter doesn't handle horizontal lines defined
-    // by *three or more* of ***, ---, or ___, but this is not handled
-    '\n\n',
-    '\n',
-    ' ',
-    '',
-  ]
-
-  constructor(fields?: Partial<MarkdownTextSplitterParams>) {
-    super(fields)
   }
 }
