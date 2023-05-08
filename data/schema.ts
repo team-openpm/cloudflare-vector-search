@@ -18,7 +18,7 @@ export type JsonValue = JsonArray | JsonObject | JsonPrimitive
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>
 
-export interface Records {
+export interface Documents {
   id: Generated<string>
   namespace: string
   text: string
@@ -28,5 +28,5 @@ export interface Records {
 }
 
 export interface DB {
-  records: Records
+  documents: Documents
 }

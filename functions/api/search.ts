@@ -1,5 +1,5 @@
 import { getDb } from '@/data/db'
-import { searchRecordsByEmbedding } from '@/data/records/getter'
+import { searchDocumentsByEmbedding } from '@/data/documents/getter'
 import { Env } from '@/helpers/env'
 import { getSearchParams } from '@/helpers/request'
 import { json } from '@/helpers/response'
@@ -20,7 +20,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ env, request }) => {
     apiKey: env.OPENAI_API_KEY,
   })
 
-  const records = await searchRecordsByEmbedding({ namespace, db, embedding })
+  const records = await searchDocumentsByEmbedding({ namespace, db, embedding })
 
   return json(
     records.map((record) => ({

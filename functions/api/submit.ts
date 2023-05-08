@@ -1,5 +1,5 @@
 import { getDb } from '@/data/db'
-import { indexRecord } from '@/data/records/setter'
+import { indexDocument } from '@/data/documents/setter'
 import { Env } from '@/helpers/env'
 import { json } from '@/helpers/response'
 import { createEmbedding } from '@/lib/openai/embeddings'
@@ -19,21 +19,21 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
     return json({ error: schemaParse.error })
   }
 
-  const recordData = schemaParse.data
+  const { data: params } = schemaParse
 
   const embedding = await createEmbedding({
-    input: recordData.text,
+    input: params.text,
     apiKey: env.OPENAI_API_KEY,
   })
 
-  const record = {
-    text: recordData.text,
-    namespace: recordData.namespace,
-    metadata: recordData.metadata,
+  const document = {
+    text: params.text,
+    namespace: params.namespace,
+    metadata: params.metadata,
     embedding,
   }
 
-  const response = await indexRecord({ record, db })
+  const response = await indexDocument({ document, db })
 
   return json(response)
 }

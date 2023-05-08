@@ -1,26 +1,8 @@
 import { Kysely, sql } from 'kysely'
 import { DB } from '../schema'
-import { vector } from '@/lib/sql'
+import { cmprEmbedding } from '@/lib/sql'
 
-export async function searchRecordsByText({
-  query,
-  namespace,
-  db,
-}: {
-  query: string
-  namespace: string
-  db: Kysely<DB>
-}) {
-  return await db
-    .selectFrom('records')
-    .selectAll()
-    .where('namespace', '=', namespace)
-    .where('text', 'ilike', `%${query}%`)
-    .limit(10)
-    .execute()
-}
-
-export async function searchRecordsByEmbedding({
+export async function searchDocumentsByEmbedding({
   embedding,
   namespace,
   threshold = 0.8,
@@ -34,7 +16,7 @@ export async function searchRecordsByEmbedding({
   threshold?: number
 }) {
   return await db
-    .selectFrom('records')
+    .selectFrom('documents')
     .select([
       'id',
       'namespace',
@@ -49,9 +31,4 @@ export async function searchRecordsByEmbedding({
     .orderBy('similarity', 'desc')
     .limit(limit)
     .execute()
-}
-
-function cmprEmbedding(embedding: number[]) {
-  // OpenAI recommend cosine similarity
-  return sql`1 - (${vector(embedding)} <=> embedding)`
 }

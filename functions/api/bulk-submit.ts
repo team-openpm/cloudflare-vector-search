@@ -1,5 +1,5 @@
 import { getDb } from '@/data/db'
-import { indexRecord } from '@/data/records/setter'
+import { indexDocument } from '@/data/documents/setter'
 import { Env } from '@/helpers/env'
 import { json } from '@/helpers/response'
 import { createEmbedding } from '@/lib/openai/embeddings'
@@ -19,21 +19,21 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
     return json({ error: schemaParse.error })
   }
 
-  const recordData = schemaParse.data
+  const { data: params } = schemaParse
 
   const splitter = new RecursiveCharacterTextSplitter({
     chunkSize: 1000,
     chunkOverlap: 0,
   })
 
-  const documents = await splitter.createDocuments([recordData.text])
+  const documents = await splitter.createDocuments([params.text])
 
   const records = await Promise.all(
     documents.map((document) =>
       indexText({
         text: document.pageContent,
-        metadata: recordData.metadata,
-        namespace: recordData.namespace,
+        metadata: params.metadata,
+        namespace: params.namespace,
         env,
       })
     )
@@ -58,7 +58,7 @@ async function indexText({
     apiKey: env.OPENAI_API_KEY,
   })
 
-  const record = {
+  const document = {
     text,
     namespace,
     metadata,
@@ -67,5 +67,5 @@ async function indexText({
 
   const db = getDb(env)
 
-  return await indexRecord({ record, db })
+  return await indexDocument({ document, db })
 }
