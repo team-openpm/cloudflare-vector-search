@@ -25,7 +25,10 @@ export const onRequestGet: PagesFunction<Env> = async ({ env, request }) => {
 
   const records = await searchRecordsByEmbedding({ namespace, db, embedding })
 
-  const contextText = limitedJoin(records.map((record) => record.text))
+  const contextText = limitedJoin(
+    records.map((record) => record.text),
+    1500
+  )
 
   const prompt = stripIndent`${oneLine`
   You are a very enthusiastic bot who loves
@@ -42,8 +45,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ env, request }) => {
   ${query}
   """
 
-  Answer as markdown (including related code snippets if available):
-`
+  Answer as markdown (including related code snippets if available):`
 
   const [responseMessage] = await createChatCompletion({
     model: 'gpt-3.5-turbo',
