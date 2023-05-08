@@ -29,25 +29,44 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
 
   const documents = await splitter.createDocuments([recordData.text])
 
-  const ids: string[] = []
+  const records = await Promise.all(
+    documents.map((document) =>
+      indexText({
+        text: document.pageContent,
+        metadata: recordData.metadata,
+        namespace: recordData.namespace,
+        env,
+      })
+    )
+  )
 
-  for (const document of documents) {
-    const embedding = await createEmbedding({
-      input: recordData.text,
-      apiKey: env.OPENAI_API_KEY,
-    })
+  return json({ records })
+}
 
-    const record = {
-      text: document.pageContent,
-      namespace: recordData.namespace,
-      metadata: recordData.metadata,
-      embedding,
-    }
+async function indexText({
+  text,
+  metadata,
+  namespace,
+  env,
+}: {
+  text: string
+  metadata: Record<string, string>
+  namespace: string
+  env: Env
+}) {
+  const embedding = await createEmbedding({
+    input: text,
+    apiKey: env.OPENAI_API_KEY,
+  })
 
-    const response = await indexRecord({ record, db })
-
-    ids.push(response.id)
+  const record = {
+    text,
+    namespace,
+    metadata,
+    embedding,
   }
 
-  return json({ ids })
+  const db = getDb(env)
+
+  return await indexRecord({ record, db })
 }
