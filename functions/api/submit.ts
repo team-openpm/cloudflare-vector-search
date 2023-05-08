@@ -23,7 +23,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
 
   const embedding = await fetchEmbeddings({
     input: recordData.text,
-    apiKey: env.OPENAPI_API_KEY,
+    apiKey: env.OPENAI_API_KEY,
   })
 
   const record = {

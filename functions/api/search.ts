@@ -12,7 +12,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ env, request }) => {
   const namespace = params.get('namespace') || 'default'
   const embedding = await fetchEmbeddings({
     input: query,
-    apiKey: env.OPENAPI_API_KEY,
+    apiKey: env.OPENAI_API_KEY,
   })
 
   const records = await searchRecordsByEmbedding({ namespace, db, embedding })
@@ -25,6 +25,11 @@ export const onRequestGet: PagesFunction<Env> = async ({ env, request }) => {
       metadata: record.metadata,
       indexed_at: record.indexed_at,
       similarity: record.similarity,
-    }))
+    })),
+    {
+      headers: {
+        'Cache-Control': 'stale-while-revalidate=60 max-age=3600',
+      },
+    }
   )
 }
