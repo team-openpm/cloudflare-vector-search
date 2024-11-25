@@ -10,7 +10,7 @@
     "load-schema": "wrangler d1 execute lawgpt-d1 --file ./data/schema.sql --remote",
     "setup-cloudflare-d1": "wrangler d1 create lawgpt-d1",
     "setup-cloudflare-vectorize": "npx wrangler vectorize create vector-index --dimensions 1024 --metric=euclidean",
-    "setup-cloudflare-vectorize-index": "wrangler vectorize create-metadata-index vectorize-index --property-name=document_id --type=string",
+    "setup-cloudflare-vectorize-document-id-index": "wrangler vectorize create-metadata-index vectorize-index --property-name=document_id --type=string",
     "setup-cloudflare": "npm run setup-cloudflare-d1 && npm run setup-cloudflare-vectorize && npm run setup-cloudflare-vectorize-index"
   },
   "devDependencies": {
@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.0.4",
+    "@extractus/article-extractor": "^8.0.16",
     "ai": "^4.0.4",
     "cloudflare-basics": "^0.0.9",
     "common-tags": "^1.8.2",

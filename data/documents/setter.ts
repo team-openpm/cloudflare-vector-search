@@ -1,6 +1,8 @@
 import { Env } from '@/helpers/env'
 import { Document } from '../schema'
 import { generateEmbedding } from '@/helpers/embed'
+import { RecursiveCharacterTextSplitter } from '@/lib/text-splitter'
+import { summarizeText } from '@/helpers/llm'
 
 interface InsertDocument {
   url: string
@@ -33,13 +35,19 @@ export async function insertDocument({
     throw new Error('Failed to get inserted document ID')
   }
 
-  const embedding = await generateEmbedding(document.text, env)
+  const summaryText = await summarizeText(document.text, env)
+
+  const textChunks = [...(await splitDocumentText(document.text)), summaryText]
+
+  const embeddings = await Promise.all(
+    textChunks.map((chunk) => generateEmbedding(chunk, env))
+  )
 
   // Insert into vector database
   await env.VECTORIZE.upsert(
-    embedding.map((value) => ({
+    embeddings.map((embedding) => ({
       id: crypto.randomUUID(),
-      values: [value],
+      values: embedding,
       namespace: document.namespace,
       metadata: {
         document_id: documentId,
@@ -48,4 +56,13 @@ export async function insertDocument({
   )
 
   return documentId
+}
+
+async function splitDocumentText(text: string): Promise<string[]> {
+  const splitter = new RecursiveCharacterTextSplitter({
+    chunkSize: 1000,
+    chunkOverlap: 0,
+  })
+
+  return await splitter.splitText(text)
 }

@@ -25,9 +25,9 @@ export async function searchDocuments({
   })
 
   // Find documents by id
-  const documentIds = [
-    ...new Set(results.matches.map(({ metadata }) => metadata?.document_id)),
-  ]
+  const documentIds = unique(
+    results.matches.map(({ metadata }) => metadata?.document_id)
+  )
 
   if (documentIds.length === 0) {
     return []
@@ -42,4 +42,8 @@ export async function searchDocuments({
     .all<Document>()
 
   return documents.results
+}
+
+function unique<T>(arr: T[]) {
+  return [...new Set(arr)]
 }
