@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.0.4",
-    "@extractus/article-extractor": "^8.0.16",
     "ai": "^4.0.4",
     "cloudflare-basics": "^0.0.9",
     "common-tags": "^1.8.2",

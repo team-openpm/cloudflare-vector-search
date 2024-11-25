@@ -5,7 +5,7 @@ import { createOpenAI } from '@ai-sdk/openai'
 import { streamText } from 'ai'
 import { oneLine, stripIndent } from 'common-tags'
 
-import { withZod } from 'cloudflare-basics/index'
+import { withZod } from 'cloudflare-basics'
 import { z } from 'zod'
 
 const schema = z.object({

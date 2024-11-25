@@ -1,6 +1,6 @@
 import { searchDocuments } from '@/data/documents/getter'
 import { Env } from '@/helpers/env'
-import { json, withZod } from 'cloudflare-basics/index'
+import { json, withZod } from 'cloudflare-basics'
 import { z } from 'zod'
 
 const schema = z.object({
