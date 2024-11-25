@@ -76,7 +76,7 @@ yarn dev
 
 ### Database
 
-`cloudflare-vector-search` uses a Postgres database to store the vectors. We recomment using [Neon](https://neon.tech).
+`lawgpt-search` uses a Postgres database to store the vectors. We recomment using [Neon](https://neon.tech).
 
 Sign up for a free account and paste in the schema from `data/schema.sql` into the SQL editor.
 

@@ -1,4 +1,18 @@
-name = "cloudflare-vector-search"
+name = "lawgpt-search"
+
+main = "src/worker.ts"
 
 [vars]
 ENVIRONMENT = "production"
+
+[ai]
+binding = "AI"
+
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "vector-index"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "lawgpt-d1"
+database_id = "b6eb0d0c-eff7-409f-8850-3fe341081b4f"

@@ -1,27 +1,30 @@
 {
-  "name": "cloudflare-vector-search",
+  "name": "lawgpt-search",
   "private": true,
   "version": "0.0.0",
   "engines": {
     "node": "= 18"
   },
   "scripts": {
-    "dev": "wrangler pages dev public",
-    "update-kysely-types": "env-cmd -f .dev.vars kysely-codegen --out-file ./data/schema.ts --exclude-pattern spatial_ref_sys --dialect postgres"
+    "dev": "wrangler dev",
+    "load-schema": "wrangler d1 execute lawgpt-d1 --file ./data/schema.sql --remote",
+    "setup-cloudflare-d1": "wrangler d1 create lawgpt-d1",
+    "setup-cloudflare-vectorize": "npx wrangler vectorize create vector-index --dimensions 1024 --metric=euclidean",
+    "setup-cloudflare-vectorize-index": "wrangler vectorize create-metadata-index vectorize-index --property-name=document_id --type=string",
+    "setup-cloudflare": "npm run setup-cloudflare-d1 && npm run setup-cloudflare-vectorize && npm run setup-cloudflare-vectorize-index"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230419.0",
-    "@types/common-tags": "^1.8.1",
+    "@cloudflare/workers-types": "^4.20241112.0",
+    "@types/common-tags": "^1.8.4",
     "env-cmd": "^10.1.0",
-    "kysely-codegen": "^0.10.0",
-    "pg": "^8.10.0",
-    "wrangler": "^2.19.0"
+    "wrangler": "^3.90.0"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^0.4.3",
+    "@ai-sdk/openai": "^1.0.4",
+    "ai": "^4.0.4",
+    "cloudflare-basics": "^0.0.9",
     "common-tags": "^1.8.2",
-    "gpt3-tokenizer": "^1.1.5",
-    "kysely": "^0.24.2",
-    "zod": "^3.21.4"
+    "gpt-tokenizer": "^2.6.2",
+    "zod": "^3.23.8"
   }
 }

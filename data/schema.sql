@@ -1,42 +1,25 @@
--- Postgres Schema for vector search database
-
--- Drop database if exists
--- DROP TABLE IF EXISTS documents;
-
--- Enable uuid
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
--- Enable full text search
-CREATE EXTENSION IF NOT EXISTS "pg_trgm";
-
--- Enable vector search
-CREATE EXTENSION IF NOT EXISTS "vector";
-
-
 CREATE TABLE documents (
-  -- uuid id
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  -- Using TEXT as primary key since D1/SQLite doesn't have UUID
+  id TEXT PRIMARY KEY DEFAULT (uuid()),
 
-  -- Unique namespace
+  -- URL of the document
+  url TEXT NOT NULL,
+  
+  -- Namespace remains the same
   namespace TEXT NOT NULL,
-
-  -- Raw text to search by
+  
+  -- Text field remains the same
   text TEXT NOT NULL,
+  
+  -- Using TEXT for metadata since D1/SQLite doesn't have JSONB
+  -- metadata TEXT NOT NULL DEFAULT '{}',
+  
+  -- Using INTEGER for timestamp (SQLite standard)
+  indexed_at INTEGER NOT NULL DEFAULT (unixepoch())
 
-  -- Embedding vector for semantic search
-  embedding VECTOR(1536) NOT NULL,
-
-  -- Metadata
-  metadata JSONB NOT NULL DEFAULT '{}',
-
-  indexed_at TIMESTAMP NOT NULL DEFAULT NOW()
+  -- Unique constraint on url and namespace
+  UNIQUE(url, namespace)
 );
 
--- Indexes
-CREATE INDEX documents_text_idx ON documents USING GIN (text gin_trgm_ops);
-
--- index for namespace
-CREATE INDEX documents_namespace_idx ON documents (namespace);
-
--- Index for embedding
-CREATE INDEX documents_embedding_idx ON documents USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100)
+CREATE INDEX documents_namespace_idx ON documents(namespace);
+CREATE INDEX documents_url_idx ON documents(url);
