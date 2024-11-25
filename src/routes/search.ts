@@ -5,7 +5,7 @@ import { z } from 'zod'
 
 const schema = z.object({
   query: z.string().min(1),
-  namespace: z.string(),
+  namespace: z.string().default('default'),
 })
 
 type schemaType = z.infer<typeof schema>

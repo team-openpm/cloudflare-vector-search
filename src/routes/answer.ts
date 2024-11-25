@@ -10,7 +10,7 @@ import { z } from 'zod'
 
 const schema = z.object({
   query: z.string().min(1),
-  namespace: z.string(),
+  namespace: z.string().default('default'),
 })
 
 type schemaType = z.infer<typeof schema>
@@ -30,9 +30,9 @@ export const RouteAnswer = withZod<Env, schemaType>(schema, async (options) => {
   const prompt = stripIndent`${oneLine`
   You are a very enthusiastic bot who loves
   to help people! Given the following sections from the
-  documentation, answer the question using only that information,
+  law, answer the question using only that information,
   outputted in markdown format. If you are unsure and the answer
-  is not explicitly written in the documentation, say
+  is not explicitly written in the provided context, say
   "Sorry, I don't know how to help with that."`}
 
   Context sections:
@@ -40,9 +40,7 @@ export const RouteAnswer = withZod<Env, schemaType>(schema, async (options) => {
 
   Question: """
   ${options.data.query}
-  """
-
-  Answer as markdown (including related code snippets if available):`
+  """`
 
   const openaiProvider = createOpenAI({
     apiKey: options.env.OPENAI_API_KEY,

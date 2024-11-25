@@ -7,7 +7,6 @@ import { z } from 'zod'
 const schema = z.object({
   url: z.string().url(),
   namespace: z.string().default('default'),
-  metadata: z.record(z.string()).default({}),
 })
 
 type schemaType = z.infer<typeof schema>
