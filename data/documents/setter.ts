@@ -17,12 +17,14 @@ export async function insertDocument({
   document: InsertDocument
   env: Env
 }) {
+  const summaryText = await summarizeText(document.text, env)
+
   // Insert into D1 database first
   const result = await env.DB.prepare(
-    `INSERT OR REPLACE INTO documents (url, namespace, text) 
-     VALUES (?, ?, ?)`
+    `INSERT OR REPLACE INTO documents (url, namespace, text, summary) 
+     VALUES (?, ?, ?, ?)`
   )
-    .bind(document.url, document.namespace, document.text)
+    .bind(document.url, document.namespace, document.text, summaryText)
     .run<Document>()
 
   if (!result.success) {
@@ -30,12 +32,7 @@ export async function insertDocument({
   }
 
   // Get the inserted document ID
-  const documentId = result.results[0]?.id
-  if (!documentId) {
-    throw new Error('Failed to get inserted document ID')
-  }
-
-  const summaryText = await summarizeText(document.text, env)
+  const documentId = result.meta.last_row_id
 
   const textChunks = [...(await splitDocumentText(document.text)), summaryText]
 

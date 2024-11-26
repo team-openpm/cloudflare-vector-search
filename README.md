@@ -1,91 +1,91 @@
-# cloudflare vector search
+# LawGPT Search
 
-This project is a Cloudflare Page that allows you to perform a semantic search over a set of documents.
+A vector search API for legal documents powered by Cloudflare Workers, D1, and Vectorize. This API allows you to submit legal documents, search through them semantically, and get AI-powered answers to legal questions.
 
-Essentially you can search for meaning, not just keywords.
+## Features
 
-The nice thing about using Cloudflare is that it's incredibly fast and cheap. You can deploy this to a free Cloudflare Page and it will scale to millions of documents.
+- Document submission with automatic text chunking and embedding
+- Semantic search across documents
+- AI-powered question answering using the document context
+- Namespace support for document organization
+- Built on Cloudflare's edge infrastructure
 
-See below for examples on how to submit and search documents.
+## Setup
 
-For large documents, we support a bulk submit endpoint that will automatically split your document into paragraphs and index each paragraph separately.
-
-## Usage
-
-### Submitting
-
-```bash
-curl -X POST -H "Content-Type: application/json" -d '{"text": "cloudflare"}' "http://127.0.0.1:8788/api/submit"
-```
-
-### Submitting large documents
+1. Clone this repository
+2. Set up a [Cloudflare](https://www.cloudflare.com/) Page with their admin
+3. Run the setup commands:
 
 ```bash
-curl -X POST -H "Content-Type: application/json" -d '{"text": "big document"}' "http://127.0.0.1:8788/api/bulk-submit"
+pnpm
+pnpm setup-cloudflare
+pnpm load-schema
 ```
 
-### Searching
+## Environment Variables
+
+- `OPENAI_API_KEY`: Your OpenAI API key
+- `AUTH_SECRET`: A secret used to authenticate requests to the API (optional)
+
+## API Endpoints
+
+### Submit a Document
+
+Submit a new document to be indexed:
 
 ```bash
-curl "http://127.0.0.1:8788/api/search?query=cloudflare"
+curl -X POST http://localhost:8787/submit \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-auth-secret" \
+  -d '{
+    "url": "https://example.com/legal-doc",
+    "text": "Your legal document text here",
+    "namespace": "contracts"
+  }'
 ```
 
-Which returns:
+### Search Documents
 
-```json
-[
-  {
-    "id": "fad58cf0-78dc-4170-9ae3-38f5c62868e3",
-    "namespace": "default",
-    "text": "cloudflare",
-    "metadata": {},
-    "indexed_at": "2023-05-08T08:02:29.058Z",
-    "similarity": 0.9999999999999998
-  }
-]
-```
-
-## Additional options
-
-You can pass a `namespace` parameter to both the submit and search endpoints to namespace your queries.
+Search through indexed documents:
 
 ```bash
-curl -X POST -H "Content-Type: application/json" -d '{"text": "cloudflare", "namespace": "my-namespace"}' "http://127.0.0.1:8788/api/submit"
+curl -X POST http://localhost:8787/search \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-auth-secret" \
+  -d '{
+    "query": "What are the termination clauses?",
+    "namespace": "contracts"
+  }'
 ```
 
-And then:
+### Ask Questions
+
+Get AI-powered answers based on the document context:
 
 ```bash
-curl "http://127.0.0.1:8788/api/search?query=cloudflare&namespace=my-namespace"
+curl -X POST http://localhost:8787/answer \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-auth-secret" \
+  -d '{
+    "query": "What are my rights under this contract?",
+    "namespace": "contracts"
+  }'
 ```
-
-A namespace could be a user ID, a document ID, or anything else you want to use to group your queries.
-
-You can also pass in a key/value `metadata` object to the submit endpoint to store additional data about your query.
 
 ## Development
 
-Setup the env vars as described below and then run:
+Run the development server:
 
 ```bash
-yarn
-yarn dev
+pnpm dev
 ```
 
-## Deployment
+## API Schema
 
-### Database
+Full OpenAPI schema available at `/openapi.json` endpoint.
 
-`lawgpt-search` uses a Postgres database to store the vectors. We recomment using [Neon](https://neon.tech).
+## Technical Details
 
-Sign up for a free account and paste in the schema from `data/schema.sql` into the SQL editor.
-
-### Cloudflare
-
-Clone this repo and then set up a [Cloudflare](https://www.cloudflare.com/) Page with their admin.
-
-We expect the following env vars:
-
-- `DATABASE_URL`: The URL to your Postgres database
-- `OPENAI_API_KEY`: Your OpenAI API key
-- `AUTH_SECRET`: A secret used to authenticate requests to the API (optional)
+- Uses Cloudflare D1 for document storage
+- Cloudflare Vectorize for embedding storage and similarity search
+- Text

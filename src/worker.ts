@@ -18,6 +18,7 @@ export default {
 
     router.post('/answer', RouteAnswer)
     router.post('/search', RouteSearch)
+    router.get('/search', RouteSearch)
     router.post('/submit', RouteSubmit)
 
     return (

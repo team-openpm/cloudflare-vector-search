@@ -1,5 +1,5 @@
 import { Env } from '@/helpers/env'
-import { Document } from '../schema'
+import { Document, DocumentWithoutText } from '../schema'
 import { generateEmbedding } from '@/helpers/embed'
 
 export async function searchDocuments({
@@ -34,14 +34,34 @@ export async function searchDocuments({
   }
 
   const documents = await env.DB.prepare(
-    `SELECT * FROM documents WHERE id IN (${documentIds
+    `SELECT id, url, namespace, summary, indexed_at FROM documents WHERE id IN (${documentIds
       .map(() => '?')
       .join(',')}) AND namespace = ?`
   )
     .bind(...documentIds, namespace)
-    .all<Document>()
+    .all<DocumentWithoutText>()
 
   return documents.results
+}
+
+export async function getDocumentsByIds({
+  ids,
+  namespace,
+  env,
+}: {
+  ids: number[]
+  namespace: string
+  env: Env
+}): Promise<Document[]> {
+  const result = await env.DB.prepare(
+    `SELECT * FROM documents WHERE id IN (${ids
+      .map(() => '?')
+      .join(',')}) AND namespace = ?`
+  )
+    .bind(...ids, namespace)
+    .all<Document>()
+
+  return result.results
 }
 
 function unique<T>(arr: T[]) {

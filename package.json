@@ -7,11 +7,12 @@
   },
   "scripts": {
     "dev": "wrangler dev",
-    "load-schema": "wrangler d1 execute lawgpt-d1 --file ./data/schema.sql --remote",
+    "deploy": "wrangler deploy",
+    "load-schema": "wrangler d1 execute lawgpt-d1 --file ./data/schema.sql",
     "setup-cloudflare-d1": "wrangler d1 create lawgpt-d1",
-    "setup-cloudflare-vectorize": "npx wrangler vectorize create vector-index --dimensions 1024 --metric=euclidean",
-    "setup-cloudflare-vectorize-document-id-index": "wrangler vectorize create-metadata-index vectorize-index --property-name=document_id --type=string",
-    "setup-cloudflare": "npm run setup-cloudflare-d1 && npm run setup-cloudflare-vectorize && npm run setup-cloudflare-vectorize-index"
+    "setup-cloudflare-vectorize": "npx wrangler vectorize create lawgpt-vector --dimensions 1024 --metric=euclidean",
+    "setup-cloudflare-vectorize-document-id-index": "wrangler vectorize create-metadata-index lawgpt-vector --property-name=document_id --type=number",
+    "setup-cloudflare": "npm run setup-cloudflare-d1 && npm run setup-cloudflare-vectorize && npm run setup-cloudflare-vectorize-document-id-index"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241112.0",

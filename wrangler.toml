@@ -12,7 +12,7 @@ binding = "AI"
 
 [[vectorize]]
 binding = "VECTORIZE"
-index_name = "vector-index"
+index_name = "lawgpt-vector"
 
 [[d1_databases]]
 binding = "DB"
