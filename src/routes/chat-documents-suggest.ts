@@ -19,7 +19,7 @@ const schema = z.object({
 type schemaType = z.infer<typeof schema>
 
 // Search for documents relevant to the user's question
-export const RouteChatSuggestDocuments = withZod<Env, schemaType>(
+export const RouteChatDocumentsSuggest = withZod<Env, schemaType>(
   schema,
   async ({ env, data }) => {
     const openaiProvider = createOpenAI({

@@ -82,6 +82,24 @@ export async function getDocumentsByIds({
   return result.results
 }
 
+export async function getDocumentById({
+  id,
+  namespace,
+  env,
+}: {
+  id: number
+  namespace: string
+  env: Env
+}): Promise<Document | null> {
+  const result = await env.DB.prepare(
+    `SELECT * FROM documents WHERE id = ? AND namespace = ?`
+  )
+    .bind(id, namespace)
+    .first<Document>()
+
+  return result
+}
+
 function unique<T>(arr: T[]) {
   return [...new Set(arr)]
 }

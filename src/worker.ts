@@ -1,10 +1,11 @@
 import { Env } from '@/helpers/env'
 import { Router } from 'cloudflare-basics'
 import { RouteChat } from './routes/chat'
-import { RouteSearch } from './routes/search'
-import { RouteSubmit } from './routes/submit'
-import { RouteSuggestDocuments } from './routes/suggest-documents'
-import { RouteChatSuggestDocuments } from './routes/chat-suggest-documents'
+import { RouteDocumentsSearch } from './routes/documents-search'
+import { RouteDocumentsSubmit } from './routes/documents-submit'
+import { RouteDocumentsSuggest } from './routes/documents-suggest'
+import { RouteChatDocumentsSuggest } from './routes/chat-documents-suggest'
+import { RouteDocumentsRetrive } from './routes/documents-retrive'
 
 export default {
   async fetch(
@@ -19,19 +20,24 @@ export default {
     })
 
     // Search route
-    router.get('/search', RouteSearch)
+    router.get('/documents/search', RouteDocumentsSearch)
 
     // Submit document route
-    router.post('/submit', RouteSubmit)
+    router.post('/documents', RouteDocumentsSubmit)
+
+    // Suggest documents route
+    router.post('/documents/suggest', RouteDocumentsSuggest)
+
+    // Retrive document route
+    router.get('/documents/:documentId', RouteDocumentsRetrive)
 
     // Chat/Answer route
     router.post('/chat', RouteChat)
 
     // Chat suggest documents route
-    router.post('/chat-suggest-documents', RouteChatSuggestDocuments)
+    router.post('/chat/suggest', RouteChatDocumentsSuggest)
 
     // Suggest documents route
-    router.post('/suggest-documents', RouteSuggestDocuments)
 
     return (
       router.handle(request, env, ctx) ??

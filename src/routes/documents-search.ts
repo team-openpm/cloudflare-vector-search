@@ -10,12 +10,15 @@ const schema = z.object({
 
 type schemaType = z.infer<typeof schema>
 
-export const RouteSearch = withZod<Env, schemaType>(schema, async (options) => {
-  const documents = await searchDocumentsByContent({
-    text: options.data.query,
-    namespace: options.data.namespace,
-    env: options.env,
-  })
+export const RouteDocumentsSearch = withZod<Env, schemaType>(
+  schema,
+  async (options) => {
+    const documents = await searchDocumentsByContent({
+      text: options.data.query,
+      namespace: options.data.namespace,
+      env: options.env,
+    })
 
-  return json(documents)
-})
+    return json(documents)
+  }
+)

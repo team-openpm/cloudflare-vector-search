@@ -11,11 +11,14 @@ const schema = z.object({
 
 type schemaType = z.infer<typeof schema>
 
-export const RouteSubmit = withZod<Env, schemaType>(schema, async (options) => {
-  const documentId = await insertDocument({
-    document: options.data,
-    env: options.env,
-  })
+export const RouteDocumentsSubmit = withZod<Env, schemaType>(
+  schema,
+  async (options) => {
+    const documentId = await insertDocument({
+      document: options.data,
+      env: options.env,
+    })
 
-  return json({ id: documentId })
-})
+    return json({ id: documentId })
+  }
+)
