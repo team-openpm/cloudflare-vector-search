@@ -17,7 +17,7 @@ const schema = z.object({
 type schemaType = z.infer<typeof schema>
 
 // Search documents based on their title
-export const RouteChatSuggestDocuments = withZod<Env, schemaType>(
+export const RouteSuggestDocuments = withZod<Env, schemaType>(
   schema,
   async ({ env, data }) => {
     const documents = await searchDocumentsByTitle({

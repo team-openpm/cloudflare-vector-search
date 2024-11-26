@@ -1,7 +1,4 @@
-import {
-  getDocumentsByIds,
-  searchDocumentsByContent,
-} from '@/data/documents/getter'
+import { getDocumentsByIds } from '@/data/documents/getter'
 import { Env } from '@/helpers/env'
 import { limitedJoin } from '@/helpers/tokenize'
 import { createOpenAI } from '@ai-sdk/openai'
@@ -24,7 +21,7 @@ const schema = z.object({
 
 type schemaType = z.infer<typeof schema>
 
-export const RouteAnswer = withZod<Env, schemaType>(
+export const RouteChat = withZod<Env, schemaType>(
   schema,
   async ({ data, env }) => {
     const documents = await getDocumentsByIds({
