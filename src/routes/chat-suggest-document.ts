@@ -28,7 +28,7 @@ export const RouteChatSuggestDocument = withZod<Env, schemaType>(
 
     const prompt = stripIndent`
     You are a helpful assistant that can answer questions about the law. Based on the following conversation,
-    what would be the most relevent search query to look up in the law?
+    what would be the most relevent search query to look up in the law? Return only the search query, no other text.
 
     ${data.messages
       .map((message) => `${message.role}: ${message.content}`)
