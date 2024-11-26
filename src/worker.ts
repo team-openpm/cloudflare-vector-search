@@ -1,6 +1,6 @@
 import { Env } from '@/helpers/env'
 import { Router } from 'cloudflare-basics'
-import { RouteAnswer } from './routes/answer'
+import { RouteAnswer } from './routes/chat'
 import { RouteSearch } from './routes/search'
 import { RouteSubmit } from './routes/submit'
 

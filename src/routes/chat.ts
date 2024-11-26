@@ -1,4 +1,7 @@
-import { getDocumentsByIds, searchDocuments } from '@/data/documents/getter'
+import {
+  getDocumentsByIds,
+  searchDocumentsByContent,
+} from '@/data/documents/getter'
 import { Env } from '@/helpers/env'
 import { limitedJoin } from '@/helpers/tokenize'
 import { createOpenAI } from '@ai-sdk/openai'

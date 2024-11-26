@@ -2,7 +2,8 @@ import { Env } from '@/helpers/env'
 import { Document } from '../schema'
 import { generateEmbedding } from '@/helpers/embed'
 import { RecursiveCharacterTextSplitter } from '@/lib/text-splitter'
-import { summarizeText } from '@/helpers/llm'
+import { extractDocumentMetadata } from '@/helpers/llm'
+import { getOpenAIProvider } from '@/helpers/openai'
 
 interface InsertDocument {
   url: string
@@ -17,14 +18,25 @@ export async function insertDocument({
   document: InsertDocument
   env: Env
 }) {
-  const summaryText = await summarizeText(document.text, env)
+  const openaiProvider = getOpenAIProvider(env)
+
+  const metadata = await extractDocumentMetadata({
+    text: document.text,
+    model: openaiProvider('gpt-3.5-turbo'),
+  })
 
   // Insert into D1 database first
   const result = await env.DB.prepare(
-    `INSERT OR REPLACE INTO documents (url, namespace, text, summary) 
-     VALUES (?, ?, ?, ?)`
+    `INSERT OR REPLACE INTO documents (url, namespace, title, text, summary) 
+     VALUES (?, ?, ?, ?, ?)`
   )
-    .bind(document.url, document.namespace, document.text, summaryText)
+    .bind(
+      document.url,
+      document.namespace,
+      metadata.title,
+      document.text,
+      metadata.summary
+    )
     .run<Document>()
 
   if (!result.success) {
@@ -34,7 +46,11 @@ export async function insertDocument({
   // Get the inserted document ID
   const documentId = result.meta.last_row_id
 
-  const textChunks = [...(await splitDocumentText(document.text)), summaryText]
+  const textChunks = [
+    metadata.title,
+    ...(await splitDocumentText(document.text)),
+    metadata.summary,
+  ]
 
   const embeddings = await Promise.all(
     textChunks.map((chunk) => generateEmbedding(chunk, env))

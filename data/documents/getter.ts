@@ -2,7 +2,7 @@ import { Env } from '@/helpers/env'
 import { Document, DocumentWithoutText } from '../schema'
 import { generateEmbedding } from '@/helpers/embed'
 
-export async function searchDocuments({
+export async function searchDocumentsByContent({
   text,
   namespace,
   threshold = 0.8,
@@ -42,6 +42,24 @@ export async function searchDocuments({
     .all<DocumentWithoutText>()
 
   return documents.results
+}
+
+export async function searchDocumentsByTitle({
+  title,
+  namespace,
+  env,
+}: {
+  title: string
+  namespace: string
+  env: Env
+}): Promise<DocumentWithoutText[]> {
+  const result = await env.DB.prepare(
+    `SELECT id, url, namespace, summary, indexed_at FROM documents WHERE title LIKE ? AND namespace = ?`
+  )
+    .bind(`%${title}%`, namespace)
+    .all<DocumentWithoutText>()
+
+  return result.results
 }
 
 export async function getDocumentsByIds({

@@ -1,4 +1,4 @@
-import { searchDocuments } from '@/data/documents/getter'
+import { searchDocumentsByContent } from '@/data/documents/getter'
 import { Env } from '@/helpers/env'
 import { createOpenAI } from '@ai-sdk/openai'
 import { generateText } from 'ai'
@@ -19,7 +19,7 @@ const schema = z.object({
 type schemaType = z.infer<typeof schema>
 
 // Search for documents relevant to the user's question
-export const RouteChatSuggestDocument = withZod<Env, schemaType>(
+export const RouteChatSuggestDocuments = withZod<Env, schemaType>(
   schema,
   async ({ env, data }) => {
     const openaiProvider = createOpenAI({
@@ -40,7 +40,7 @@ export const RouteChatSuggestDocument = withZod<Env, schemaType>(
       prompt,
     })
 
-    const documents = await searchDocuments({
+    const documents = await searchDocumentsByContent({
       text: result.text,
       namespace: data.namespace,
       env,
