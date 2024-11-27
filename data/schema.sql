@@ -1,10 +1,13 @@
 DROP TABLE IF EXISTS documents;
 
-CREATE TABLE documents (
+CREATE VIRTUAL TABLE documents USING fts5 (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
 
   -- URL of the document
   url TEXT NOT NULL,
+
+  -- Title of the document
+  title TEXT NOT NULL,
   
   -- Namespace remains the same
   namespace TEXT NOT NULL,
@@ -26,4 +29,5 @@ CREATE TABLE documents (
 );
 
 CREATE INDEX documents_namespace_idx ON documents(namespace);
-CREATE INDEX documents_url_idx ON documents(url);
+CREATE INDEX documents_url_idx ON documents(namespace, url);
+CREATE INDEX documents_title_idx ON documents(namespace, title);
