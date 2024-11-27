@@ -1,10 +1,10 @@
 import { getDocumentsByIds } from '@/data/documents/getter'
 import { Env } from '@/helpers/env'
 import { limitedJoin } from '@/helpers/tokenize'
-import { createOpenAI } from '@ai-sdk/openai'
 import { streamText } from 'ai'
 import { oneLine, stripIndent } from 'common-tags'
 
+import { getOpenAIProvider } from '@/helpers/openai'
 import { withZod } from 'cloudflare-basics'
 import { z } from 'zod'
 
@@ -47,9 +47,7 @@ export const RouteChat = withZod<Env, schemaType>(
   ${contextText}
   `
 
-    const openaiProvider = createOpenAI({
-      apiKey: env.OPENAI_API_KEY,
-    })
+    const openaiProvider = getOpenAIProvider(env)
 
     const result = streamText({
       model: openaiProvider('gpt-4o'),
