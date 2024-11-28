@@ -1,33 +1,46 @@
 DROP TABLE IF EXISTS documents;
+DROP TABLE IF EXISTS documents_search;
 
-CREATE VIRTUAL TABLE documents USING fts5 (
+-- Main table with all constraints and types
+CREATE TABLE documents (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-  -- URL of the document
   url TEXT NOT NULL,
-
-  -- Title of the document
   title TEXT NOT NULL,
-  
-  -- Namespace remains the same
   namespace TEXT NOT NULL,
-  
-  -- Text field remains the same
   text TEXT NOT NULL,
-
-  -- Summary of the document
   summary TEXT NOT NULL,
-  
-  -- Using TEXT for metadata since D1/SQLite doesn't have JSONB
-  -- metadata TEXT NOT NULL DEFAULT '{}',
-  
-  -- Using INTEGER for timestamp (SQLite standard)
   indexed_at INTEGER NOT NULL DEFAULT (unixepoch()),
-
-  -- Unique constraint on url and namespace
+  
   UNIQUE(url, namespace)
 );
 
+-- FTS5 table for search functionality (only title and summary)
+CREATE VIRTUAL TABLE documents_search USING fts5 (
+  title,
+  summary,
+  content='documents',
+  content_rowid='id'
+);
+
+-- Indexes for the main table
 CREATE INDEX documents_namespace_idx ON documents(namespace);
 CREATE INDEX documents_url_idx ON documents(namespace, url);
 CREATE INDEX documents_title_idx ON documents(namespace, title);
+
+-- Triggers to keep FTS index up to date (modified to only sync title and summary)
+CREATE TRIGGER documents_ai AFTER INSERT ON documents BEGIN
+  INSERT INTO documents_search(rowid, title, summary)
+  VALUES (new.id, new.title, new.summary);
+END;
+
+CREATE TRIGGER documents_ad AFTER DELETE ON documents BEGIN
+  INSERT INTO documents_search(documents_search, rowid, title, summary)
+  VALUES('delete', old.id, old.title, old.summary);
+END;
+
+CREATE TRIGGER documents_au AFTER UPDATE ON documents BEGIN
+  INSERT INTO documents_search(documents_search, rowid, title, summary)
+  VALUES('delete', old.id, old.title, old.summary);
+  INSERT INTO documents_search(rowid, title, summary)
+  VALUES (new.id, new.title, new.summary);
+END;

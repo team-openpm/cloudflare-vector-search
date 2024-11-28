@@ -29,46 +29,72 @@ pnpm load-schema
 
 ## API Endpoints
 
-### Submit a Document
-
-Submit a new document to be indexed:
+### 1. Search Documents
 
 ```bash
-curl -X POST http://localhost:8787/submit \
+curl -X GET "http://localhost:8787/documents/search" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-auth-secret" \
   -d '{
-    "url": "https://example.com/legal-doc",
-    "text": "Your legal document text here",
-    "namespace": "contracts"
+    "query": "your search query",
+    "namespace": "default"
   }'
 ```
 
-### Search Documents
-
-Search through indexed documents:
+### 2. Submit Document
 
 ```bash
-curl -X POST http://localhost:8787/search \
+curl -X POST "http://localhost:8787/documents" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-auth-secret" \
   -d '{
-    "query": "What are the termination clauses?",
-    "namespace": "contracts"
+    "url": "https://example.com/document",
+    "text": "Your document text here",
+    "namespace": "default"
   }'
 ```
 
-### Ask Questions
-
-Get AI-powered answers based on the document context:
+### 3. Suggest Documents
 
 ```bash
-curl -X POST http://localhost:8787/answer \
+curl -X POST "http://localhost:8787/documents/suggest" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-auth-secret" \
   -d '{
-    "query": "What are my rights under this contract?",
-    "namespace": "contracts"
+    "query": "document title search",
+    "namespace": "default"
+  }'
+```
+
+### 4. Retrieve Document
+
+```bash
+curl -X GET "http://localhost:8787/documents/123" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-auth-secret"
+```
+
+### 5. Chat/Answer
+
+```bash
+curl -X POST "http://localhost:8787/chat" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-auth-secret" \
+  -d '{
+    "query": "your question about the documents",
+    "namespace": "default"
+  }'
+```
+
+### 6. Chat Document Suggestions
+
+```bash
+curl -X POST "http://localhost:8787/chat/suggest" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-auth-secret" \
+  -d '{
+    "query": "your question for document suggestions",
+    "namespace": "default"
   }'
 ```
 
@@ -80,12 +106,9 @@ Run the development server:
 pnpm dev
 ```
 
-## API Schema
+### Setup
 
-Full OpenAPI schema available at `/openapi.json` endpoint.
-
-## Technical Details
-
-- Uses Cloudflare D1 for document storage
-- Cloudflare Vectorize for embedding storage and similarity search
-- Text
+```bash
+pnpm setup-cloudflare
+pnpm load-schema --remote
+```

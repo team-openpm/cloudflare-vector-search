@@ -54,9 +54,14 @@ export async function searchDocumentsByTitle({
   env: Env
 }): Promise<DocumentWithoutText[]> {
   const result = await env.DB.prepare(
-    `SELECT id, url, namespace, summary, indexed_at FROM documents WHERE title LIKE ? AND namespace = ?`
+    `
+    SELECT d.id, d.url, d.namespace, d.summary, d.indexed_at 
+    FROM documents d
+    JOIN documents_search ds ON d.id = ds.rowid
+    WHERE ds.title LIKE ? COLLATE NOCASE AND d.namespace = ?
+  `
   )
-    .bind(`%${title}%`, namespace)
+    .bind(title, namespace)
     .all<DocumentWithoutText>()
 
   return result.results
