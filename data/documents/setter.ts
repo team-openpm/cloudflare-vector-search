@@ -48,17 +48,22 @@ export async function insertDocument({
 
   const textChunks = [
     metadata.title,
-    ...(await splitDocumentText(document.text)),
     metadata.summary,
+    ...(await splitDocumentText(document.text)),
   ]
 
+  // We only need to embed the first 300 chunks
+  const truncatedTextChunks = textChunks.slice(0, 300)
+
   const embeddings = await Promise.all(
-    textChunks.map((chunk) => generateEmbedding(chunk, env))
+    truncatedTextChunks.map((chunk) => generateEmbedding(chunk, env))
   )
+
+  const validEmbeddings = embeddings.filter((embedding) => embedding.length > 0)
 
   // Insert into vector database
   await env.VECTORIZE.upsert(
-    embeddings.map((embedding) => ({
+    validEmbeddings.map((embedding) => ({
       id: crypto.randomUUID(),
       values: embedding,
       namespace: document.namespace,

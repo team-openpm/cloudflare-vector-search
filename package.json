@@ -6,7 +6,7 @@
     "node": "= 18"
   },
   "scripts": {
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --experimental-vectorize-bind-to-prod",
     "deploy": "wrangler deploy",
     "load-schema": "wrangler d1 execute lawgpt-d1 --file ./data/schema.sql",
     "setup-cloudflare-d1": "wrangler d1 create lawgpt-d1",
