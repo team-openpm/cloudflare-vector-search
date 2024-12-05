@@ -34,7 +34,6 @@ pnpm load-schema
 ```bash
 curl -X GET "http://localhost:8787/documents/search" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer your-auth-secret" \
   -d '{
     "query": "your search query",
     "namespace": "default"
@@ -59,7 +58,6 @@ curl -X POST "http://localhost:8787/documents" \
 ```bash
 curl -X POST "http://localhost:8787/documents/suggest" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer your-auth-secret" \
   -d '{
     "query": "document title search",
     "namespace": "default"
@@ -79,7 +77,6 @@ curl -X GET "http://localhost:8787/documents/123" \
 ```bash
 curl -X POST "http://localhost:8787/chat" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer your-auth-secret" \
   -d '{
     "query": "your question about the documents",
     "namespace": "default"

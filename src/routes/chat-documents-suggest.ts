@@ -5,6 +5,7 @@ import { generateText } from 'ai'
 import { json, withZod } from 'cloudflare-basics'
 import { oneLine, stripIndent } from 'common-tags'
 import { z } from 'zod'
+import { withAuth } from '../middleware/auth'
 
 const messageSchema = z.object({
   role: z.enum(['user', 'assistant']),
@@ -19,9 +20,8 @@ const schema = z.object({
 type schemaType = z.infer<typeof schema>
 
 // Search for documents relevant to the user's question
-export const RouteChatDocumentsSuggest = withZod<Env, schemaType>(
-  schema,
-  async ({ env, data }) => {
+export const RouteChatDocumentsSuggest = withAuth<Env>(
+  withZod<Env, schemaType>(schema, async ({ env, data }) => {
     const openaiProvider = createOpenAI({
       apiKey: env.OPENAI_API_KEY,
     })
@@ -47,5 +47,5 @@ export const RouteChatDocumentsSuggest = withZod<Env, schemaType>(
     })
 
     return json(documents)
-  }
+  })
 )
