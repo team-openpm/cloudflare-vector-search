@@ -24,7 +24,7 @@ export default {
     router.get('/documents/search', RouteDocumentsSearch)
 
     // AI search route
-    router.post('/documents/ai-search', RouteDocumentsAiSearch)
+    router.get('/documents/ai-search', RouteDocumentsAiSearch)
 
     // Submit document route
     router.post('/documents', RouteDocumentsSubmit)

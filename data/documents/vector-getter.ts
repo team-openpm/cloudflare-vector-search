@@ -1,5 +1,6 @@
 import { generateEmbedding } from '@/helpers/embed'
 import { Env } from '@/helpers/env'
+import { unique } from '@/lib/unique'
 
 export type DocumentMatch = {
   documentId: number
@@ -23,7 +24,7 @@ export async function queryDocumentVectors({
     namespace,
     topK: limit,
     returnValues: false,
-    returnMetadata: true,
+    returnMetadata: 'indexed',
   })
 
   const results = unique(
