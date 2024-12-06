@@ -1,10 +1,8 @@
 import { Env } from '@/helpers/env'
-import { Document, DocumentVectorType } from '../schema'
-import { generateEmbedding } from '@/helpers/embed'
-import { RecursiveCharacterTextSplitter } from '@/lib/text-splitter'
 import { extractDocumentMetadata } from '@/helpers/llm'
 import { getOpenAIProvider } from '@/helpers/openai'
-import { truncateString } from '@/helpers/truncate'
+import { Document } from '../schema'
+import { upsertDocumentVectors } from './vector-setter'
 
 interface InsertDocument {
   url: string
@@ -47,71 +45,14 @@ export async function insertDocument({
   // Get the inserted document ID
   const documentId = result.meta.last_row_id
 
-  const vectorMetadataParagraphs = await splitDocumentText(document.text)
-  const truncatedVectorMetadataParagraphs = vectorMetadataParagraphs.slice(
-    0,
-    300
-  )
-
-  const vectorMetadata: DocumentVectorMetadata[] = [
-    {
-      document_id: documentId,
-      text: metadata.title,
-      type: 'title',
-    },
-    {
-      document_id: documentId,
-      text: metadata.summary,
-      type: 'summary',
-    },
-    ...truncatedVectorMetadataParagraphs.map((text) => ({
-      document_id: documentId,
-      text,
-      type: 'paragraph' as DocumentVectorType,
-    })),
-  ]
-
-  const vectorMetadataWithEmbeddings = await Promise.all(
-    vectorMetadata.map(async (metadata) => ({
-      ...metadata,
-      embedding: await generateEmbedding(metadata.text, env),
-    }))
-  )
-
-  const validVectorMetadataWithEmbeddings = vectorMetadataWithEmbeddings.filter(
-    ({ embedding }) => embedding.length > 0
-  )
-
-  // Insert into vector database
-  await env.VECTORIZE.upsert(
-    validVectorMetadataWithEmbeddings.map(({ text, embedding, type }) => ({
-      id: crypto.randomUUID(),
-      values: embedding,
-      namespace: document.namespace,
-      metadata: {
-        document_id: documentId,
-        text: truncateString(text, MAX_METADATA_LENGTH),
-        type,
-      },
-    }))
-  )
-
-  return documentId
-}
-
-const MAX_METADATA_LENGTH = 9216
-
-async function splitDocumentText(text: string): Promise<string[]> {
-  const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 1000,
-    chunkOverlap: 0,
+  await upsertDocumentVectors({
+    documentId,
+    title: metadata.title,
+    summary: metadata.summary,
+    text: document.text,
+    namespace: document.namespace,
+    env,
   })
 
-  return await splitter.splitText(text)
-}
-
-type DocumentVectorMetadata = {
-  document_id: number
-  text: string
-  type: DocumentVectorType
+  return documentId
 }

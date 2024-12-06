@@ -1,6 +1,6 @@
 import { generateObject, LanguageModelV1 } from 'ai'
 import { z } from 'zod'
-import { truncateText } from './tokenize'
+import { truncateText } from '../lib/tokenize'
 
 const documentSchema = z.object({
   title: z.string().describe('The title of the document'),

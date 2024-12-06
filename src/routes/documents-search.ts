@@ -1,4 +1,4 @@
-import { searchDocumentsByContent } from '@/data/documents/getter'
+import { searchPartialDocumentsByContent } from '@/data/documents/getter'
 import { Env } from '@/helpers/env'
 import { json, withZod } from 'cloudflare-basics'
 import { z } from 'zod'
@@ -13,7 +13,7 @@ type schemaType = z.infer<typeof schema>
 export const RouteDocumentsSearch = withZod<Env, schemaType>(
   schema,
   async (options) => {
-    const documents = await searchDocumentsByContent({
+    const documents = await searchPartialDocumentsByContent({
       text: options.data.query,
       namespace: options.data.namespace,
       env: options.env,

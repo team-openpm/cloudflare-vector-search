@@ -25,6 +25,7 @@
     "wrangler": "^3.90.0"
   },
   "dependencies": {
+    "@ai-sdk/google": "^1.0.5",
     "@ai-sdk/openai": "^1.0.4",
     "ai": "^4.0.4",
     "cloudflare-basics": "^0.0.9",

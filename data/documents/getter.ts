@@ -1,69 +1,71 @@
 import { Env } from '@/helpers/env'
-import { Document, DocumentSearchResult, DocumentWithoutText } from '../schema'
-import { generateEmbedding } from '@/helpers/embed'
-import { notEmpty } from '@/helpers/not-empty'
+import { Document, DocumentWithoutText } from '../schema'
+import { queryDocumentVectors } from './vector-getter'
 
-export async function searchDocumentsByContent({
+export async function searchPartialDocumentsByContent({
   text,
   namespace,
-  limit = 20,
+  limit = 25,
   env,
 }: {
   text: string
   namespace: string
   env: Env
   limit?: number
-}): Promise<DocumentSearchResult[]> {
-  const embedding = await generateEmbedding(text, env)
-
-  const results = await env.VECTORIZE.query(embedding, {
+}): Promise<DocumentWithoutText[]> {
+  const documentMatches = await queryDocumentVectors({
+    text,
     namespace,
-    topK: limit,
-    returnValues: false,
-    returnMetadata: true,
+    env,
+    limit,
   })
 
-  // Find documents by id
-  const documentIds = unique(
-    results.matches.map(({ metadata }) => metadata?.document_id)
-  )
-
-  if (documentIds.length === 0) {
+  if (documentMatches.length === 0) {
     return []
   }
 
-  const documents = await env.DB.prepare(
-    `SELECT id, url, title, summary, namespace, indexed_at FROM documents WHERE id IN (${documentIds
-      .map(() => '?')
+  const documentsResult = await env.DB.prepare(
+    `SELECT id, url, title, summary, namespace, indexed_at FROM documents WHERE id IN (${documentMatches
+      .map(({ documentId }) => '?')
       .join(',')}) AND namespace = ?`
   )
-    .bind(...documentIds, namespace)
+    .bind(...documentMatches.map(({ documentId }) => documentId), namespace)
     .all<DocumentWithoutText>()
 
-  const searchResults = buildSearchResults(documents.results, results.matches)
-
-  // Sort by score, descending
-  searchResults.sort((a, b) => b.score - a.score)
-
-  return searchResults
+  return documentsResult.results
 }
 
-function buildSearchResults(
-  documents: DocumentWithoutText[],
-  matches: VectorizeMatch[]
-): DocumentSearchResult[] {
-  return documents.map((document) => {
-    const documentMatches = matches.filter(
-      (m) => m.metadata?.document_id === document.id
-    )
-
-    const highestScore = Math.max(...documentMatches.map((m) => m.score))
-
-    return {
-      ...document,
-      score: highestScore,
-    }
+export async function searchDocumentsByContent({
+  text,
+  namespace,
+  limit = 25,
+  env,
+}: {
+  text: string
+  namespace: string
+  env: Env
+  limit?: number
+}): Promise<Document[]> {
+  const documentMatches = await queryDocumentVectors({
+    text,
+    namespace,
+    env,
+    limit,
   })
+
+  if (documentMatches.length === 0) {
+    return []
+  }
+
+  const documentsResult = await env.DB.prepare(
+    `SELECT * FROM documents WHERE id IN (${documentMatches
+      .map(({ documentId }) => '?')
+      .join(',')}) AND namespace = ?`
+  )
+    .bind(...documentMatches.map(({ documentId }) => documentId), namespace)
+    .all<Document>()
+
+  return documentsResult.results
 }
 
 export async function searchDocumentsByTitle({
@@ -77,7 +79,7 @@ export async function searchDocumentsByTitle({
 }): Promise<DocumentWithoutText[]> {
   const result = await env.DB.prepare(
     `
-    SELECT d.id, d.url, d.namespace, d.summary, d.indexed_at 
+    SELECT d.id, d.url, d.title, d.namespace, d.summary, d.indexed_at 
     FROM documents d
     JOIN documents_search ds ON d.id = ds.rowid
     WHERE ds.title LIKE ? COLLATE NOCASE AND d.namespace = ?
@@ -125,8 +127,4 @@ export async function getDocumentById({
     .first<Document>()
 
   return result
-}
-
-function unique<T>(arr: T[]) {
-  return [...new Set(arr)]
 }

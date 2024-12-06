@@ -1,12 +1,12 @@
 import { getDocumentsByIds } from '@/data/documents/getter'
 import { Env } from '@/helpers/env'
-import { limitedJoin } from '@/helpers/tokenize'
 import { streamText } from 'ai'
 import { oneLine, stripIndent } from 'common-tags'
 
 import { getOpenAIProvider } from '@/helpers/openai'
 import { withZod } from 'cloudflare-basics'
 import { z } from 'zod'
+import { limitedJoin } from '@/lib/tokenize'
 
 const messageSchema = z.object({
   role: z.enum(['user', 'assistant']),

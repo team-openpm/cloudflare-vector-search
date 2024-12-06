@@ -6,6 +6,7 @@ import { RouteDocumentsSubmit } from './routes/documents-submit'
 import { RouteDocumentsSuggest } from './routes/documents-suggest'
 import { RouteChatDocumentsSuggest } from './routes/chat-documents-suggest'
 import { RouteDocumentsRetrive } from './routes/documents-retrive'
+import { RouteDocumentsAiSearch } from './routes/documents-ai-search'
 
 export default {
   async fetch(
@@ -22,11 +23,14 @@ export default {
     // Search route
     router.get('/documents/search', RouteDocumentsSearch)
 
+    // AI search route
+    router.post('/documents/ai-search', RouteDocumentsAiSearch)
+
     // Submit document route
     router.post('/documents', RouteDocumentsSubmit)
 
     // Suggest documents route
-    router.post('/documents/suggest', RouteDocumentsSuggest)
+    router.get('/documents/suggest', RouteDocumentsSuggest)
 
     // Retrive document route
     router.get('/documents/:documentId', RouteDocumentsRetrive)

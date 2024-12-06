@@ -1,9 +1,9 @@
-import { searchDocumentsByContent } from '@/data/documents/getter'
+import { searchPartialDocumentsByContent } from '@/data/documents/getter'
 import { Env } from '@/helpers/env'
-import { createOpenAI } from '@ai-sdk/openai'
+import { getOpenAIProvider } from '@/helpers/openai'
 import { generateText } from 'ai'
 import { json, withZod } from 'cloudflare-basics'
-import { oneLine, stripIndent } from 'common-tags'
+import { stripIndent } from 'common-tags'
 import { z } from 'zod'
 import { withAuth } from '../middleware/auth'
 
@@ -22,9 +22,7 @@ type schemaType = z.infer<typeof schema>
 // Search for documents relevant to the user's question
 export const RouteChatDocumentsSuggest = withAuth<Env>(
   withZod<Env, schemaType>(schema, async ({ env, data }) => {
-    const openaiProvider = createOpenAI({
-      apiKey: env.OPENAI_API_KEY,
-    })
+    const openaiProvider = getOpenAIProvider(env)
 
     const prompt = stripIndent`
     You are a helpful assistant that can answer questions about the law. Based on the following conversation,
@@ -40,7 +38,7 @@ export const RouteChatDocumentsSuggest = withAuth<Env>(
       prompt,
     })
 
-    const documents = await searchDocumentsByContent({
+    const documents = await searchPartialDocumentsByContent({
       text: result.text,
       namespace: data.namespace,
       env,
