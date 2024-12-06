@@ -1,26 +1,25 @@
 import { Env } from '@/helpers/env'
-import { Document, DocumentWithoutText } from '../schema'
+import { Document, DocumentSearchResult, DocumentWithoutText } from '../schema'
 import { generateEmbedding } from '@/helpers/embed'
+import { notEmpty } from '@/helpers/not-empty'
 
 export async function searchDocumentsByContent({
   text,
   namespace,
-  threshold = 0.8,
-  limit = 10,
+  limit = 20,
   env,
 }: {
   text: string
   namespace: string
   env: Env
   limit?: number
-  threshold?: number
-}) {
+}): Promise<DocumentSearchResult[]> {
   const embedding = await generateEmbedding(text, env)
 
   const results = await env.VECTORIZE.query(embedding, {
     namespace,
     topK: limit,
-    returnValues: true,
+    returnValues: false,
     returnMetadata: true,
   })
 
@@ -34,14 +33,37 @@ export async function searchDocumentsByContent({
   }
 
   const documents = await env.DB.prepare(
-    `SELECT id, url, namespace, summary, indexed_at FROM documents WHERE id IN (${documentIds
+    `SELECT id, url, title, summary, namespace, indexed_at FROM documents WHERE id IN (${documentIds
       .map(() => '?')
       .join(',')}) AND namespace = ?`
   )
     .bind(...documentIds, namespace)
     .all<DocumentWithoutText>()
 
-  return documents.results
+  const searchResults = buildSearchResults(documents.results, results.matches)
+
+  // Sort by score, descending
+  searchResults.sort((a, b) => b.score - a.score)
+
+  return searchResults
+}
+
+function buildSearchResults(
+  documents: DocumentWithoutText[],
+  matches: VectorizeMatch[]
+): DocumentSearchResult[] {
+  return documents.map((document) => {
+    const documentMatches = matches.filter(
+      (m) => m.metadata?.document_id === document.id
+    )
+
+    const highestScore = Math.max(...documentMatches.map((m) => m.score))
+
+    return {
+      ...document,
+      score: highestScore,
+    }
+  })
 }
 
 export async function searchDocumentsByTitle({

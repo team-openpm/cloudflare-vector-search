@@ -3,9 +3,9 @@ import { z } from 'zod'
 import { truncateText } from './tokenize'
 
 const documentSchema = z.object({
-  title: z.string(),
-  summary: z.string(),
-  tags: z.array(z.string()),
+  title: z.string().describe('The title of the document'),
+  summary: z.string().describe('A short summary of the document'),
+  tags: z.array(z.string()).describe('A list of tags for the document'),
 })
 
 export async function extractDocumentMetadata({
@@ -19,7 +19,7 @@ export async function extractDocumentMetadata({
     model,
     schema: documentSchema,
     prompt: truncateText(
-      `Extract metadata from the following text: ${text}`,
+      `Analyze the following text and extract key metadata. Create a concise title that captures the main topic, write a brief summary (1-2 sentences), and generate relevant tags that categorize the content: ${text}`,
       MAX_TOKENS
     ),
   })

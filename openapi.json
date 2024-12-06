@@ -1,0 +1,190 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "LawGPT Search API",
+    "description": "API for searching and retrieving laws and regulations",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://lawgpt-search.maccman.workers.dev",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/documents/search": {
+      "get": {
+        "summary": "Search documents",
+        "description": "Search through documents using semantic search",
+        "operationId": "searchDocuments",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The search query"
+            }
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The namespace to search in",
+              "enum": ["uk-legislation"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number",
+                        "description": "Document ID"
+                      },
+                      "url": {
+                        "type": "string",
+                        "description": "Document URL"
+                      },
+                      "namespace": {
+                        "type": "string",
+                        "description": "Document namespace",
+                        "enum": ["uk-legislation"]
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "Document title"
+                      },
+                      "summary": {
+                        "type": "string",
+                        "description": "Document summary"
+                      },
+                      "indexed_at": {
+                        "type": "number",
+                        "description": "Unix timestamp of when the document was indexed"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "url",
+                      "namespace",
+                      "title",
+                      "summary",
+                      "indexed_at"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/documents/{documentId}": {
+      "get": {
+        "summary": "Retrieve document",
+        "description": "Get a specific document by ID",
+        "operationId": "retrieveDocument",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "description": "The ID of the document to retrieve"
+            }
+          },
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The namespace of the document",
+              "enum": ["uk-legislation"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "description": "Document ID"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "Document URL"
+                    },
+                    "namespace": {
+                      "type": "string",
+                      "description": "Document namespace",
+                      "enum": ["uk-legislation"]
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Document title"
+                    },
+                    "text": {
+                      "type": "string",
+                      "description": "Full document text"
+                    },
+                    "summary": {
+                      "type": "string",
+                      "description": "Document summary"
+                    },
+                    "indexed_at": {
+                      "type": "number",
+                      "description": "Unix timestamp of when the document was indexed"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "url",
+                    "namespace",
+                    "title",
+                    "text",
+                    "summary",
+                    "indexed_at"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Document not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Document not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

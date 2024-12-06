@@ -12,9 +12,9 @@ binding = "AI"
 
 [[vectorize]]
 binding = "VECTORIZE"
-index_name = "lawgpt-vector"
+index_name = "lawgpt-vector2"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "lawgpt-d1"
-database_id = "b6eb0d0c-eff7-409f-8850-3fe341081b4f"
+database_id = "4d20edf7-a77b-4ef0-b46a-01c84469569f"

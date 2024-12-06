@@ -9,3 +9,9 @@ export interface Document {
 }
 
 export type DocumentWithoutText = Omit<Document, 'text'>
+
+export type DocumentSearchResult = DocumentWithoutText & {
+  score: number
+}
+
+export type DocumentVectorType = 'title' | 'summary' | 'paragraph'

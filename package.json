@@ -9,10 +9,14 @@
     "dev": "wrangler dev --experimental-vectorize-bind-to-prod",
     "deploy": "wrangler deploy",
     "load-schema": "wrangler d1 execute lawgpt-d1 --file ./data/schema.sql",
-    "setup-cloudflare-d1": "wrangler d1 create lawgpt-d1",
-    "setup-cloudflare-vectorize": "npx wrangler vectorize create lawgpt-vector --dimensions 1024 --metric=euclidean",
-    "setup-cloudflare-vectorize-document-id-index": "wrangler vectorize create-metadata-index lawgpt-vector --property-name=document_id --type=number",
-    "setup-cloudflare": "npm run setup-cloudflare-d1 && npm run setup-cloudflare-vectorize && npm run setup-cloudflare-vectorize-document-id-index"
+    "setup-cloudflare-d1": "wrangler d1 create lawgpt-d1 && npm run load-schema",
+    "setup-cloudflare-vectorize": "wrangler vectorize create lawgpt-vector2 --dimensions 1024 --metric=euclidean",
+    "setup-cloudflare-vectorize-document-id-index": "wrangler vectorize create-metadata-index lawgpt-vector2 --property-name=document_id --type=number",
+    "setup-cloudflare-vectorize-type-index": "wrangler vectorize create-metadata-index lawgpt-vector2 --property-name=type --type=string",
+    "setup-cloudflare": "npm run setup-cloudflare-d1 && npm run setup-cloudflare-vectorize && npm run setup-cloudflare-vectorize-document-id-index",
+    "drop-cloudflare": "npm run drop-cloudflare-d1 && npm run drop-cloudflare-vectorize",
+    "drop-cloudflare-d1": "wrangler d1 delete lawgpt-d1",
+    "drop-cloudflare-vectorize": "wrangler vectorize delete lawgpt-vector2"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241112.0",
